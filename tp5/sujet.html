@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr-FR" xml:lang="fr-FR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Orchestration de conteneurs avec Nomad</title>
+  <style>
+html {
+line-height: 1.5;
+font-family: Georgia, serif;
+font-size: 20px;
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 1em;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+font-size: 85%;
+margin: 0;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<p>Le but de ce TP est d’explorer l’utilisation de l’orchestrateur <a href="https://nomadproject.io/">Nomad</a> en combinaision avec le
+catalogue de service <a href="https://consul.io/">Consul</a>.</p>
+<h1 id="environnement-de-travail">Environnement de travail</h1>
+<p>Les postes de la salle de TP ont été pré-configurés avec <a href="https://consul.io/">Consul</a> et <a href="https://nomadproject.io/">Nomad</a> installés.</p>
+<p>Chaque machine a une interface “<code>dummy</code>” avec une adresse
+unique, sur laquelle le serveur DNS de Consul écoute.</p>
+<p>Chaque machine de la salle a son démon Docker configuré pour allouer
+des IPs dans une plage dédiée, et utilise le serveur DNS de Consul. Voir
+le fichier <code>/etc/docker/daemon.json</code>.</p>
+<p>Nomad et Consul ont tout deux été installés avec un service
+<code>systemd</code>. La définition de ces services est respectivement
+faite dans <code>/etc/systemd/system/nomad.service</code> et
+<code>/etc/systemd/system/consul.service</code>. Ils stockent
+respectivement leurs données dans <code>/opt/nomad</code> et
+<code>/opt/consul</code>. Ils lisent leurs configurations respectives
+dans <code>/etc/nomad.d</code> et <code>/etc/consul.d</code>.</p>
+<p>Un démon de routage <a href="https://bird.network.cz/"><code>bird</code></a> avec un processus
+OSPF tourne sur chacune des machines pour pouvoir s’échanger les routes
+des réseaux de Docker. La configuration se trouve dans
+<code>/etc/bird/bird.conf</code>. Vous pouvez intéragir avec le démon de
+routage via la commande <code>birdc</code>.</p>
+<h2 id="vérifier-que-tout-fonctionne">Vérifier que tout fonctionne</h2>
+<ul>
+<li>L’interface web de Consul devrait être accessible via <a href="http://localhost:8500/" class="uri">http://localhost:8500/</a></li>
+<li>Le serveur DNS de Consul devrait fonctionner:
+“<code>dig +short consul.service.consul.</code>” devrait retourner une
+IP</li>
+<li>L’outil en ligne de commande de Consul communique bien avec l’agent
+: “<code>consul members</code>” devrait lister un **serveur*</li>
+<li>L’interface web de Nomad devrait être accessible via <a href="http://localhost:4646/" class="uri">http://localhost:4646/</a></li>
+<li>L’outil en ligne de commande de Nomad communique bien avec le
+serveur : “<code>nomad node status</code>” devrait lister un
+<strong>serveur</strong></li>
+</ul>
+<hr />
+<p><strong>Prenez le temps d’explorer cet environnement et de le
+comprendre.</strong> Vous serez ammenés pour le projet à monter un
+environnement avec les mêmes fonctionnalités : déploiement de Nomad et
+Consul avec une connectivité entre les conteneurs sur plusieurs
+nœuds.</p>
+<p>Références (que votre enseignant a utilisé pour créer cet
+environnement) :</p>
+<ul>
+<li>Guide d’installation de Consul (avec le service systemd) : <a href="https://learn.hashicorp.com/tutorials/consul/deployment-guide" class="uri">https://learn.hashicorp.com/tutorials/consul/deployment-guide</a></li>
+<li>Guide d’installation de Nomad (avec le service systemd) : <a href="https://learn.hashicorp.com/tutorials/nomad/production-deployment-guide-vm-with-consul" class="uri">https://learn.hashicorp.com/tutorials/nomad/production-deployment-guide-vm-with-consul</a></li>
+<li>Le démon de routage <em>bird</em> : <a href="https://bird.network.cz/" class="uri">https://bird.network.cz/</a></li>
+<li>Configuration du démon Docker : <a href="https://docs.docker.com/config/daemon/" class="uri">https://docs.docker.com/config/daemon/</a></li>
+<li>Faire fonctionner le serveur DNS de Consul avec Docker : <a href="https://zendesk.engineering/making-docker-and-consul-get-along-5fceda1d52b9" class="uri">https://zendesk.engineering/making-docker-and-consul-get-along-5fceda1d52b9</a></li>
+</ul>
+<h1 id="premier-job-lancé-avec-nomad">Premier job lancé avec Nomad</h1>
+<p>Dans un premier temps, nous allons lancer une instance de
+l’application <a href="https://github.com/traefik/whoami">traefik/whoami</a>, qui est un
+simple serveur web affichant des informations sur les requêtes
+entrantes.</p>
+<h3 id="lancez-le-job-suivant">Lancez le job suivant :</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>job <span class="st">&quot;whoami&quot;</span> <span class="kw">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  datacenters <span class="kw">=</span> <span class="kw">[</span><span class="st">&quot;dc1&quot;</span><span class="kw">]</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  group <span class="st">&quot;app&quot;</span> <span class="kw">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    count <span class="kw">=</span> <span class="dv">1</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    network <span class="kw">{</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      port <span class="st">&quot;web&quot;</span> <span class="kw">{</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        static <span class="kw">=</span> <span class="dv">1234</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        to <span class="kw">=</span> <span class="dv">8080</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      <span class="kw">}</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">}</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    task <span class="st">&quot;web&quot;</span> <span class="kw">{</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      driver <span class="kw">=</span> <span class="st">&quot;docker&quot;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>      config <span class="kw">{</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        image <span class="kw">=</span> <span class="st">&quot;docker.io/traefik/whoami&quot;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        ports <span class="kw">=</span> <span class="kw">[</span><span class="st">&quot;web&quot;</span><span class="kw">]</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        args  <span class="kw">=</span> <span class="kw">[</span><span class="st">&quot;--port&quot;</span>, <span class="st">&quot;8080&quot;</span>, <span class="st">&quot;--verbose&quot;</span><span class="kw">]</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      <span class="kw">}</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>      resources <span class="kw">{</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        cpu    <span class="kw">=</span> <span class="dv">100</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        memory <span class="kw">=</span> <span class="dv">128</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>      <span class="kw">}</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">}</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="kw">}</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+<p>Ce <em>job</em> “whoami” contient un groupe de tâche “app”. Ce groupe
+de tâche va être alloué une fois (“<code>count = 1</code>”) ; il expose
+un port et exécute un conteneur via <em>Docker</em>.</p>
+<p>Lorsque vous soumettez ce <em>job</em>, Nomad va créer une
+<em>allocation</em> pour le groupe “app” et la placer sur un nœud
+pouvant l’exécuter. Ici, les contraintes sont un nœud :</p>
+<ul>
+<li>qui a le <em>driver</em> “docker” fonctionnel</li>
+<li>qui a 128 Mo de mémoire et 0.1 CPU disponible</li>
+<li>qui a le port 1234 de libre</li>
+</ul>
+<p>Une fois lancée, l’application devrait être accessible sur <a href="http://localhost:1234/" class="uri">http://localhost:1234/</a>.</p>
+<h3 id="explorez-le-job-et-son-allocation">Explorez le job et son
+allocation</h3>
+<p>Inspectez le job à l’aide de la commande
+“<code>nomad job status whoami</code>”.</p>
+<p>Ce <em>job</em> a généré une allocation : inspectez là à l’aide de
+“<code>nomad alloc status</code>”, et récupérez ses <em>logs</em> à
+l’aide de “<code>nomad logs -stderr</code>”.</p>
+<p>Vous trouverez les mêmes informations dans l’interface web de
+Nomad.</p>
+<h3 id="essayez-de-passer-le-nombre-dinstances-du-groupe-à-2.">Essayez
+de passer le nombre d’instances du groupe à 2.</h3>
+<p>Vous pouvez prévisualiser les changements et simuler le placement des
+allocations grâce à la commande “<code>nomad plan</code>”.</p>
+<hr />
+<p>Ici, nous avons défini le port sur lequel nous voulons que Nomad
+expose le port 8080 du conteneur.</p>
+<p>Dans le bloc <code>job &gt; group &gt; network &gt; port</code>,
+supprimez la directive <code>static</code> pour laisser Nomad allouer
+dynamiquement un port pour chaque allocation du groupe. Trouvez ensuite
+le port que Nomad a alloué pour chaque allocation en les inspectant
+depuis l’interface web de Nomad ou depuis l’outil en ligne de
+commande.</p>
+<p>Références :</p>
+<ul>
+<li>Configurer un job : <a href="https://learn.hashicorp.com/tutorials/nomad/jobs-configuring?in=nomad/manage-jobs" class="uri">https://learn.hashicorp.com/tutorials/nomad/jobs-configuring?in=nomad/manage-jobs</a></li>
+<li>Inspecter un job : <a href="https://learn.hashicorp.com/tutorials/nomad/jobs-inspect?in=nomad/manage-jobs" class="uri">https://learn.hashicorp.com/tutorials/nomad/jobs-inspect?in=nomad/manage-jobs</a></li>
+</ul>
+<h1 id="enregistrement-de-services">Enregistrement de services</h1>
+<p>La section <code>job &gt; group &gt; task</code> accepte des blocs
+<code>service</code> pour automatiquement enregistrer les instances du
+service auprès de Consul. À l’aide de la documentation dédiée à ce bloc,
+modifiez le <em>job</em> précédent pour enregistrer les instances de
+l’application auprès de Consul : <a href="https://www.nomadproject.io/docs/job-specification/service" class="uri">https://www.nomadproject.io/docs/job-specification/service</a></p>
+<p>Cette application expose une route HTTP <code>/health</code> pour
+vérifier le bon fonctionnement de l’application. Ajoutez un <a href="https://www.nomadproject.io/docs/job-specification/service#check-parameters"><code>check</code></a>
+exécutant régulièrement une requête HTTP pour vérifier la santé de
+l’application.</p>
+<p>Observez le service et ses instances dans l’interface web de
+Consul.</p>
+<h1 id="gabarit-de-configuration-et-répartiteur-de-charge">Gabarit de
+configuration et répartiteur de charge</h1>
+<p>Dans Nomad, chaque tâche d’une <em>allocation</em> a accès un dossier
+temporaire avec :</p>
+<ul>
+<li>un dossier <code>alloc/</code>, partagé entre toutes les tâches
+d’une même allocation</li>
+<li>un dossier <code>local/</code>, propre à chaque tâche</li>
+<li>un dossier <code>secrets/</code>, également propre à chaque tâche,
+et stocké en RAM</li>
+</ul>
+<p>Ces dossiers peuvent être utilisés pour des fichiers de
+configurations générés à partir de <em>templates</em>, et peuvent
+ensuite être montés dans le conteneur.</p>
+<p>Exemple (partiel), où un fichier de configuration est généré par un
+gabarit et monté dans le conteneur sous <code>/etc/app/app.conf</code>
+:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>job <span class="st">&quot;exemple&quot;</span> <span class="kw">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  group <span class="st">&quot;app&quot;</span> <span class="kw">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    task <span class="st">&quot;hello&quot;</span> <span class="kw">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      driver <span class="kw">=</span> <span class="st">&quot;docker&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      config <span class="kw">{</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        image <span class="kw">=</span> <span class="st">&quot;...&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Monte le dossier &quot;config&quot; dans /etc/app</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        mount <span class="kw">{</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>          type <span class="kw">=</span> <span class="st">&quot;bind&quot;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>          source <span class="kw">=</span> <span class="st">&quot;local/config&quot;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>          target <span class="kw">=</span> <span class="st">&quot;/etc/app&quot;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="kw">}</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="kw">}</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      template <span class="kw">{</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Gabarit</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        data <span class="kw">=</span> <span class="st">&quot;...&quot;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Généré dans le dossier &quot;local/config&quot; de la tâche</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        destination <span class="kw">=</span> <span class="st">&quot;local/config/app.conf&quot;</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Nomad envoie un signal HUP au conteneur quand le fichier de</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        <span class="co"># configuration change</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        change_mode <span class="kw">=</span> <span class="st">&quot;signal&quot;</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        change_signal <span class="kw">=</span> <span class="st">&quot;SIGHUP&quot;</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>      <span class="kw">}</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="kw">}</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="kw">}</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+<p>Références :</p>
+<ul>
+<li>le <em>working directory</em> d’une tâche : <a href="https://www.nomadproject.io/docs/runtime/environment#task-directories" class="uri">https://www.nomadproject.io/docs/runtime/environment#task-directories</a></li>
+<li>le bloc “<code>template</code>” : <a href="https://www.nomadproject.io/docs/job-specification/template" class="uri">https://www.nomadproject.io/docs/job-specification/template</a></li>
+</ul>
+<h4 id="ajoutez-un-répartiteur-de-charge">Ajoutez un répartiteur de
+charge</h4>
+<p>Ajoutez au job précédent un groupe “<code>loadbalancer</code>”
+exécutant l’image “<a href="https://hub.docker.com/_/haproxy"><code>docker.io/library/haproxy:2.7</code></a>”
+pour répartir la charge sur les différentes instances de
+l’application.</p>
+<p>Cette image charge sa configuration dans
+<code>/usr/local/etc/haproxy/haproxy.cfg</code>, et la configuration
+doit, après le rendu du <em>template</em> ressembler à ceci :</p>
+<pre><code>global
+  daemon
+  maxconn 1024
+
+defaults
+  mode http
+  balance roundrobin
+  timeout client 60s
+  timeout connect 60s
+  timeout server 60s
+
+frontend stats
+  bind *:8404
+  stats enable
+  stats uri /stats
+  stats refresh 10s
+  stats admin if TRUE
+
+frontend http
+  bind *:8080
+  default_backend web
+
+backend web
+  balance roundrobin
+  server web1 1.2.3.4:5678
+  server web2 9.8.7.6:5432
+  server web3 4.2.4.2:4242</code></pre>
+<h1 id="ajout-dun-second-nœud">Ajout d’un second nœud</h1>
+<p>Faites rejoindre un second PC à votre <em>cluster</em> Consul avec
+“<code>consul join IP</code>”, où <code>IP</code> est l’adresse IP de
+l’interface “<code>dummy0</code>” de votre poste.</p>
+<p><strong>Attention :</strong> le second PC doit avoir Consul et Nomad
+configurés en mode <em>clients</em> uniquement. Vérifiez leur fichiers
+de configuration respectives dans <code>/etc/consul.d</code> et
+<code>/etc/nomad.d</code>.</p>
+<p>Après un court instant, le PC devrait avoir rejoint le
+<em>cluster</em> Consul, mais aussi le <em>cluster</em> Nomad, puisque
+l’agent Nomad est configuré pour automatiquement découvrir les autres
+nœuds via Consul.</p>
+<p>“<code>consul members</code>” et “<code>nomad node status</code>”
+devraient tous-deux lister le nouveau nœud.</p>
+<p>Vérifiez que votre nouveau nœud fonctionne correctement en lançant de
+nouvelles tâches.</p>
+<p>S’il y a plusieurs autres PC de libre, n’hésitez pas à en ajouter
+plusieurs à votre <em>cluster</em>.</p>
+<h1 id="application-complète">Application complète</h1>
+<p>Lancez l’application du TP précédent dans votre <em>cluster</em>
+Nomad : <a href="https://github.com/sandhose/tp-siris-service-discovery" class="uri">https://github.com/sandhose/tp-siris-service-discovery</a></p>
+<p>Pour rappel, vous avez besoin :</p>
+<ul>
+<li>d’une ou plusieurs instances du serveur web</li>
+<li>d’une ou plusieurs instances de l’exécuteur de tâches</li>
+<li>d’un serveur Redis entre les deux</li>
+<li>d’un répartiteur de charge en amont des serveurs web</li>
+</ul>
+</body>
+</html>

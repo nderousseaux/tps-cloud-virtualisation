@@ -1,0 +1,2032 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>TP KVM-QEMU-Libvirt</title>
+<!-- 2023-02-02 Thu 16:25 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="Stéphane Genaud" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="www.pirilampo.org/styles/bigblow/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="www.pirilampo.org/styles/bigblow/css/bigblow.css"/>
+<link rel="stylesheet" type="text/css" href="www.pirilampo.org/styles/bigblow/css/hideshow.css"/>
+<script type="text/javascript" src="www.pirilampo.org/styles/bigblow/js/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="www.pirilampo.org/styles/bigblow/js/jquery-ui-1.10.2.min.js"></script>
+<script type="text/javascript" src="www.pirilampo.org/styles/bigblow/js/jquery.localscroll-min.js"></script>
+<script type="text/javascript" src="www.pirilampo.org/styles/bigblow/js/jquery.scrollTo-1.4.3.1-min.js"></script>
+<script type="text/javascript" src="www.pirilampo.org/styles/bigblow/js/jquery.zclip.min.js"></script>
+<script type="text/javascript" src="www.pirilampo.org/styles/bigblow/js/bigblow.js"></script>
+<script type="text/javascript" src="www.pirilampo.org/styles/bigblow/js/hideshow.js"></script>
+<script type="text/javascript" src="www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">TP KVM-QEMU-Libvirt</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Objective</a></li>
+<li><a href="#sec-2">2. Software setting before starting</a>
+<ul>
+<li><a href="#sec-2-1">2.1. Install the necessary packages</a></li>
+<li><a href="#sec-2-2">2.2. Add user to libvirt group</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. Create a VM image from an ISO image</a>
+<ul>
+<li><a href="#sec-3-1">3.1. To Do</a></li>
+<li><a href="#sec-3-2">3.2. To Do: The command-line way: virt-install</a></li>
+<li><a href="#sec-3-3">3.3. To Do</a></li>
+<li><a href="#sec-3-4">3.4. Trouble shooting 1</a>
+<ul>
+<li><a href="#sec-3-4-1">3.4.1. Access the files inside the VM image</a></li>
+<li><a href="#sec-3-4-2">3.4.2. Modify the grub config</a></li>
+</ul>
+</li>
+<li><a href="#sec-3-5">3.5. Trouble shooting 2</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4. Configure a pre-defined VM image</a>
+<ul>
+<li><a href="#sec-4-1">4.1. Download the pre-configured VM image</a></li>
+<li><a href="#sec-4-2">4.2. Enlarge Virtual Disk</a>
+<ul>
+<li><a href="#sec-4-2-1">4.2.1. To Do</a></li>
+<li><a href="#sec-4-2-2">4.2.2. To Do</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-3">4.3. Set Root Password</a>
+<ul>
+<li><a href="#sec-4-3-1">4.3.1. To Do</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-4">4.4. Remove Cloud Init</a></li>
+<li><a href="#sec-4-5">4.5. Create a libvirt configuration</a>
+<ul>
+<li><a href="#sec-4-5-1">4.5.1. To Do</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-6">4.6. Define the VM</a></li>
+<li><a href="#sec-4-7">4.7. Start the VM</a></li>
+<li><a href="#sec-4-8">4.8. Enter the VM</a></li>
+<li><a href="#sec-4-9">4.9. Exit and Stop the VM</a></li>
+</ul>
+</li>
+<li><a href="#sec-5">5. Networking</a>
+<ul>
+<li><a href="#sec-5-1">5.1. Network between host and guest (default conf.)</a>
+<ul>
+<li><a href="#sec-5-1-1">5.1.1. To Do</a></li>
+<li><a href="#sec-5-1-2">5.1.2. To Do</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-2">5.2. Configuring the Linux guest network</a></li>
+<li><a href="#sec-5-3">5.3. <code>ssh</code> connection</a>
+<ul>
+<li><a href="#sec-5-3-1">5.3.1. To Do</a></li>
+<li><a href="#sec-5-3-2">5.3.2. To Do (Guess guest's IP)</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-4">5.4. Network configuration : routed mode</a>
+<ul>
+<li><a href="#sec-5-4-1">5.4.1. To Do</a></li>
+<li><a href="#sec-5-4-2">5.4.2. Setting up a routed mode</a></li>
+<li><a href="#sec-5-4-3">5.4.3. Settings</a></li>
+<li><a href="#sec-5-4-4">5.4.4. Step 1 : define the configuration for virsh</a></li>
+<li><a href="#sec-5-4-5">5.4.5. Step 2 : make the physical router aware of VMs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-6">6. Manage VM life-cycle</a>
+<ul>
+<li><a href="#sec-6-1">6.1. Start and Stop</a>
+<ul>
+<li><a href="#sec-6-1-1">6.1.1. To Do</a></li>
+</ul>
+</li>
+<li><a href="#sec-6-2">6.2. Suspend and Resume</a></li>
+</ul>
+</li>
+<li><a href="#sec-7">7. Migration</a>
+<ul>
+<li><a href="#sec-7-1">7.1. Constraints</a></li>
+<li><a href="#sec-7-2">7.2. Setting up an NFS share</a>
+<ul>
+<li><a href="#sec-7-2-1">7.2.1. Trap to avoid</a></li>
+<li><a href="#sec-7-2-2">7.2.2. To Do</a></li>
+</ul>
+</li>
+<li><a href="#sec-7-3">7.3. Live migration with virsh</a>
+<ul>
+<li><a href="#sec-7-3-1">7.3.1. To Do</a></li>
+</ul>
+</li>
+<li><a href="#sec-7-4">7.4. Abstracting the storage</a>
+<ul>
+<li><a href="#sec-7-4-1">7.4.1. To Do</a></li>
+</ul>
+</li>
+<li><a href="#sec-7-5">7.5. Experiment persistence after migration</a>
+<ul>
+<li><a href="#sec-7-5-1">7.5.1. Recap</a></li>
+<li><a href="#sec-7-5-2">7.5.2. To Do 1</a></li>
+<li><a href="#sec-7-5-3">7.5.3. To Do 2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Objective</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+This hands-on work is  organized as a tutorial. Its goal is  to give a concrete
+feeling  about the  necessary  steps to  run  a  VM, from  its  creation to  its
+management. 
+</p>
+
+<p>
+The technologies used in this tutorial are KVM-QEMU as virtualization
+technology, and libvirt for most management and image customization operations.
+</p>
+
+<p>
+We ask you to follow the tutorial  step by step, excepted for the section <a href="#create-from-iso">Create
+a VM from an ISO image</a> for which you may choose to abort the actual installation
+of the OS if the process lasts  too long (for instance if the network connection
+is slow).
+</p>
+
+
+
+<p>
+<b>Note</b>
+You may find this <a href="https://blog.programster.org/kvm-cheatsheet">cheat sheet</a> about libvirt commands useful.
+</p>
+</div>
+</div>
+
+
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Software setting before starting</h2>
+<div class="outline-text-2" id="text-2">
+</div><div id="outline-container-sec-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Install the necessary packages</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>Installing the following packages should be enough to trigger the
+installation of all necessary packages given the dependencies. 
+<div class="org-src-container">
+
+<pre class="src src-sh">% sudo apt install qemu-kvm libvirt-bin virt-manager libguestfs-tools
+</pre>
+</div>
+</li>
+
+<li>This should check the libvirt daemon is started. 
+<div class="org-src-container">
+
+<pre class="src src-sh">% sudo service libvirtd status
+</pre>
+</div>
+<p>
+If not, start it manually.
+</p>
+</li>
+
+<li>The installation of libvirt creates noticeable directories where you will
+find some important files, in case you have to fix problems:
+
+<ul class="org-ul">
+<li><code>/var/lib/libvirt/</code> into which the <code>images/</code> directory contains the VM
+images
+</li>
+
+<li><code>/etc/libvirt/qemu/</code> which contains the  configuration files for each VM
+as an  XML file.  
+</li>
+
+<li>Notice that if  you create the VM as a normal user  with <code>virsh define</code> (see
+later),    this   xml    definition   is    stored   in    the   user    dir
+<code>$HOME/.config/libvirt</code>.
+</li>
+</ul>
+</li>
+</ul>
+
+
+<ul class="org-ul">
+<li>Optionnally, you may install
+</li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-sh">% apt install libosinfo-bin
+</pre>
+</div>
+<p>
+which provides the <code>osinfo-query</code> utility, which you may want to use 
+  later to provide <code>virt-install --os-variant</code> with a proper value.
+</p>
+
+<p>
+For instance:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">% osinfo-query os
+...
+ubuntu16.04          | Ubuntu 16.04                                       | 16.04    | http://ubuntu.com/ubuntu/16.04
+...
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Add user to libvirt group</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+<a id="user-in-libvirt-grp" name="user-in-libvirt-grp"></a>  
+To  enable  some  of the  operations  without  being  a
+priviliged user (e.g <code>virsh</code> operations without  <code>sudo</code>), this user should be in
+the <code>libvirt</code> group.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">usermod -a -G libvirt user
+</pre>
+</div>
+
+<p>
+<b>Beware that this modification is taken into account once the user logs in again</b>.
+One way to avoid logging out and in is to :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">% su - user
+</pre>
+</div>
+<p>
+and then you shoud see that the user actually belongs to the libvirt group:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">% groups user
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Create a VM image from an ISO image</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+<a id="create-from-iso" name="create-from-iso"></a>
+</p>
+
+<p>
+If we start from scratch, we would need to create a VM image from a distribution
+image, typically an ISO image of the distribution. In the example below, we
+suppose a Debian image has already been downloaded from an appropriate
+repository, e.g <a href="https://www.debian.org/CD/">https://www.debian.org/CD/</a>. Notice that the creation process may
+also use an URL to download the ISO instead of a downloaded file.
+</p>
+
+<p>
+Next, the VM creation process can take place either:
+</p>
+<ul class="org-ul">
+<li>through a GUI, for kvm <code>virt-manager</code> is the standard tool,
+</li>
+<li>through a command line using <code>virt-install</code>.
+</li>
+</ul>
+<p>
+We focus here on the command line tools.
+</p>
+</div>
+
+<div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> To Do</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li>Download a small ISO image of  a Debian distribution.  Smallest ones are those
+which  only contain  the  base system  and download  extra  software from  the
+network.    Their    filename    contains   <code>netinst</code>,    for    instance    :
+<a href="https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.6.0-amd64-netinst.iso">https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.6.0-amd64-netinst.iso</a>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> To Do: The command-line way: virt-install</h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li>We now wish to create a VM image  from this ISO image.  Here is an example for
+creating  a VM  image. Run  this command  after having  checked it  suits your
+installation. This  command will  start and  load the  ISO file,  initiating a
+fresh install.
+</li>
+
+<li><i>Note:</i> You may run the command 
+<ul class="org-ul">
+<li>as root to bypass any privilege problem or, 
+</li>
+<li>as a normal user but mind that the user must belong to group <code>kvm</code> and the
+path to where store the VM image must be writable for this user.
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">%  virt-install <span style="color: #8b2252;">\</span>
+ -n debian-vm <span style="color: #8b2252;">\</span>
+ --description <span style="color: #8b2252;">"Debian Test VM"</span> <span style="color: #8b2252;">\</span>
+ --os-type=Linux <span style="color: #8b2252;">\</span>
+ --os-variant=debian9 <span style="color: #8b2252;">\</span>
+ --memory=2048 <span style="color: #8b2252;">\</span>
+ --vcpus=2 <span style="color: #8b2252;">\</span>
+ --disk <span style="color: #a0522d;">path</span>=/var/lib/libvirt/images/debian11.img,<span style="color: #a0522d;">bus</span>=virtio,<span style="color: #a0522d;">size</span>=5 <span style="color: #8b2252;">\</span>
+ --graphics none <span style="color: #8b2252;">\</span>
+ --location /where/is_your_iso/iso-cd/debian-11.2.0-amd64-netinst.iso <span style="color: #8b2252;">\</span>
+ --extra-args <span style="color: #8b2252;">'console=ttyS0,115200n8 serial'</span>
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="./img/debian_install.png" alt="debian_install.png" width="60%" />
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> To Do</h3>
+<div class="outline-text-3" id="text-3-3">
+<ul class="org-ul">
+<li>Answer the questions:
+<ol class="org-ol">
+<li>What happens once the installation process is finished ? You may run <code>virsh
+     list --all</code> to get a clue.
+</li>
+
+<li>What  represents the  <code>-disk path</code>  option? the <code>-n</code>  option ?  the <code>vcpus</code>
+     option in the the <code>virt-install</code> command?
+</li>
+
+<li>The command should create two files:
+<ul class="org-ul">
+<li><code>/libvirt/qemu/debian-vm.xml</code>
+</li>
+<li><code>/var/lib/libvirt/images/debian10.img</code>
+</li>
+</ul>
+<p>
+What are  they ?  use the <code>file</code>  linux command or  try visualizing  them to
+ answer.
+</p>
+</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-3-4" class="outline-3">
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Trouble shooting 1</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+The next step  could be to connect  to this VM through a  console. However, this
+debian  distribution has  a grub  configuration  which does  not permit  console
+login.  <b>You  are  not  asked  to  do the  following  for  now</b>.  The  following
+explanation is only given for information of how to solve the problem.
+</p>
+</div>
+
+<div id="outline-container-sec-3-4-1" class="outline-4">
+<h4 id="sec-3-4-1"><span class="section-number-4">3.4.1</span> Access the files inside the VM image</h4>
+<div class="outline-text-4" id="text-3-4-1">
+<p>
+In order to modify the guest grub configuration (file <code>/etc/default/grub</code>)
+stored in the VM image, we first have to mount it with the the command
+<code>guestmount</code> (package <code>libguestfs-tools</code>). In the following we create a <code>mnt</code>
+directory as mount point. 
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">% virsh shutdown debian-vm  <span style="color: #b22222;"># </span><span style="color: #b22222;">make sure the VM is stopped</span>
+% mkdir mnt <span style="color: #b22222;"># </span><span style="color: #b22222;">create a dir for mount point</span>
+% sudo guestmount -d debian-vm -i ./mnt
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-3-4-2" class="outline-4">
+<h4 id="sec-3-4-2"><span class="section-number-4">3.4.2</span> Modify the grub config</h4>
+<div class="outline-text-4" id="text-3-4-2">
+<div class="org-src-container">
+
+<pre class="src src-sh">% sudo vi ./mnt/etc/default/grub <span style="color: #b22222;"># </span><span style="color: #b22222;">edit the grub conf now</span>
+</pre>
+</div>
+<p>
+You should have the following lines:
+</p>
+<pre class="example">
+GRUB_CMDLINE_LINUX='console=tty0 console=ttyS0,19200n8'
+GRUB_TERMINAL=serial
+GRUB_SERIAL_COMMAND="serial --speed=19200 --unit=0 --word=8 --parity=no --stop=1"
+</pre>
+
+<p>
+As  you will  have to  run  <code>update-grub</code> on  the  guest, you  must also  modify
+<code>/mnt/boot/grub/grub.cfg</code>.  Find  the default  boot  menu  item and  append  the
+console information to the linux entry to read:
+</p>
+
+<pre class="example">
+linux /boot/vmlinuz-4.4.0-75-generic root=UUID=76f3e237-d791-4e9d-8ad7-fe5c9165ae55 ro
+console=ttyS0,19200 earlyprint=serial,ttyS0,19200
+</pre>
+
+<p>
+Then unmount the image:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">% sudo guestunmount ./mnt
+</pre>
+</div>
+
+<p>
+Now restart the guest and start the virtual console:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">virsh start debian-vm &amp;&amp; virsh console debian-vm
+</pre>
+</div>
+
+<p>
+You should see the  kernel log and then a login prompt.  After logging in, don't
+forget to run <code>sudo update-grub</code>.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-3-5" class="outline-3">
+<h3 id="sec-3-5"><span class="section-number-3">3.5</span> Trouble shooting 2</h3>
+<div class="outline-text-3" id="text-3-5">
+<p>
+<i>This section gives some hints to clean-up an aborted VM image creation with
+<code>virt-install</code>. You do not have to read it if you skip this process.</i>
+</p>
+
+
+<p>
+When a VM installation aborts for  some reason, <code>virt-install</code> may have begun to
+  write  some   files,  making   difficult  to   re-run  the   install  command,
+  <code>virt-install</code> complaining the VM identifier already exists.
+</p>
+
+<p>
+Several operations may be needed to clean up the aborted attempt.
+</p>
+
+<ul class="org-ul">
+<li>First check if virt has recorded the (attempted) created VM.
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">% virsh list --all
+Id    Name                           State
+----------------------------------------------------
+ 1     debian-vm                     inactive
+</pre>
+</div>
+
+
+<ul class="org-ul">
+<li>In case libvirt has recorded the VM name, you may have to undefine it. 
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">% virsh -c qemu:///system undefine debian-vm
+Domain debian-vm has been undefined
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Probably the XML configuration and the image have also been created and you
+should remove them.
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Configure a pre-defined VM image</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+The  previous section  of  the  tutorial required  to  download  and install  an
+ISO. This can be a lengthy process and in this section, we skip the installation
+of the VM image from an ISO image.
+</p>
+
+<p>
+Pre-configured VM images exist in  most distribution, in particular to be
+used by VM tool kits such as OpenStack. The operations in this section deal with
+downloading, configuring and running such a VM image.
+</p>
+</div>
+
+
+<div id="outline-container-sec-4-1" class="outline-3">
+<h3 id="sec-4-1"><span class="section-number-3">4.1</span> Download the pre-configured VM image</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+We will use  a 18.04 Ubuntu distribution (Bionic Beaver)  that has been prepared
+for use  with OpenStack.   It can  be downloaded from  the Ubuntu’s  cloud image
+cache. (Download time in room I005, single-user : ~4min).
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">wget https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img
+</pre>
+</div>
+
+<p>
+Create a directory to store your disk image:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">% mkdir $<span style="color: #a0522d;">HOME</span>/images
+% mv bionic-server-cloudimg-amd64.img $<span style="color: #a0522d;">HOME</span>/images
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-4-2" class="outline-3">
+<h3 id="sec-4-2"><span class="section-number-3">4.2</span> Enlarge Virtual Disk</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+This VM image is tailored for cloud environments. In particular, it has been
+made light-weight so that the boot time is reduced. However, we will be more
+confortable with a larger virtual disk.
+</p>
+</div>
+
+<div id="outline-container-sec-4-2-1" class="outline-4">
+<h4 id="sec-4-2-1"><span class="section-number-4">4.2.1</span> To Do</h4>
+<div class="outline-text-4" id="text-4-2-1">
+<ul class="org-ul">
+<li>Determine how big is the virtual disk in this image using <code>qemu-img</code>.
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-4-2-2" class="outline-4">
+<h4 id="sec-4-2-2"><span class="section-number-4">4.2.2</span> To Do</h4>
+<div class="outline-text-4" id="text-4-2-2">
+<ul class="org-ul">
+<li>Resize the VM image to 20G using the command <code>qemu-img</code>.
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-4-3" class="outline-3">
+<h3 id="sec-4-3"><span class="section-number-3">4.3</span> Set Root Password</h3>
+<div class="outline-text-3" id="text-4-3">
+<ul class="org-ul">
+<li>An important feature of  libvirt is its ability to modify  the contents of the
+image, even if no running VM makes  the image "alive".  The modification of an
+image on disk is done with  the command <code>virt-customize</code> which can customize a
+virtual machine (disk  image) by installing packages  or editing configuration
+files. 
+</li>
+
+<li>We now set the root password of our image  in order to be able to log in after
+we boot the image.
+</li>
+</ul>
+</div>
+
+<div id="outline-container-sec-4-3-1" class="outline-4">
+<h4 id="sec-4-3-1"><span class="section-number-4">4.3.1</span> To Do</h4>
+<div class="outline-text-4" id="text-4-3-1">
+<ul class="org-ul">
+<li>As sudoer, edit the image <code>bionic-server-cloudimg-amd64.img</code> with <code>virt-customize</code> and set the password for
+root to <i>coolpass</i>. The command argument to set the password is <code>--root-password password:coolpass</code>.
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4-4" class="outline-3">
+<h3 id="sec-4-4"><span class="section-number-3">4.4</span> Remove Cloud Init</h3>
+<div class="outline-text-3" id="text-4-4">
+<p>
+The <code>bionic-server-cloudimg-amd64.img</code> image we use is shipped with a package called
+<code>cloud-init</code> which contains python scripts helping at VM deployment. We will not
+use it and we get rid of it to avoid interference.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">$ virt-customize -a bionic-server-cloudimg-amd64.img --uninstall cloud-init
+[   0.0] Examining the guest ...
+[  12.1] Setting a random seed
+virt-customize: warning: random seed could not be set for this type of
+guest
+[  12.1] Uninstalling packages: cloud-init
+[  17.1] Finishing off
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4-5" class="outline-3">
+<h3 id="sec-4-5"><span class="section-number-3">4.5</span> Create a libvirt configuration</h3>
+<div class="outline-text-3" id="text-4-5">
+<p>
+To boot the VM using virsh, we need to create an XML configuration file, as the
+one <code>virt-install</code> would have create in section <a id="create-from-iso" name="create-from-iso"></a>.
+</p>
+</div>
+
+<div id="outline-container-sec-4-5-1" class="outline-4">
+<h4 id="sec-4-5-1"><span class="section-number-4">4.5.1</span> To Do</h4>
+<div class="outline-text-4" id="text-4-5-1">
+<p>
+Below is a  template with most relevant fields.  Copy-paste  this template as an
+ordinary file <code>vm.xml</code>  somewhere in your home directory. Then  edit and replace
+the various variables indicated by double  braces with your choices of resources
+and file  locations. Sensible  values could  be 2GB  of RAM,  2 VCPUs.
+<code>currentMemory</code> should be less or equal to <code>memory</code>, which is the max memory the
+VM can get (see <a href="http://www.espenbraastad.no/posts/memory-ballooning/">more</a>).
+</p>
+
+<p>
+Let us choose a name for this VM for libvirt (<code>&lt;name&gt;</code> tag): call it  <code>bionic-vm</code>.
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-xml">&lt;<span style="color: #0000ff;">domain</span> <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">kvm</span><span style="color: #8b2252;">'</span>&gt;
+  &lt;<span style="color: #0000ff;">name</span>&gt;{{ vm_name }}&lt;/<span style="color: #0000ff;">name</span>&gt;
+  &lt;<span style="color: #0000ff;">memory</span> <span style="color: #a0522d;">unit</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">KiB</span><span style="color: #8b2252;">'</span>&gt;{{ vm_required_memory }}&lt;/<span style="color: #0000ff;">memory</span>&gt;
+  &lt;<span style="color: #0000ff;">currentMemory</span> <span style="color: #a0522d;">unit</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">KiB</span><span style="color: #8b2252;">'</span>&gt;{{ vm_required_memory }}&lt;/<span style="color: #0000ff;">currentMemory</span>&gt;
+  &lt;<span style="color: #0000ff;">vcpu</span>&gt;{{ vm_required_vcpu }}&lt;/<span style="color: #0000ff;">vcpu</span>&gt;
+  &lt;<span style="color: #0000ff;">os</span>&gt;
+    &lt;<span style="color: #0000ff;">type</span> <span style="color: #a0522d;">arch</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">x86_64</span><span style="color: #8b2252;">'</span>&gt;hvm&lt;/<span style="color: #0000ff;">type</span>&gt;
+    &lt;<span style="color: #0000ff;">boot</span> <span style="color: #a0522d;">dev</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">hd</span><span style="color: #8b2252;">'</span>/&gt;
+  &lt;/<span style="color: #0000ff;">os</span>&gt;
+  &lt;<span style="color: #0000ff;">features</span>&gt;
+    &lt;<span style="color: #0000ff;">acpi</span>/&gt;
+    &lt;<span style="color: #0000ff;">apic</span>/&gt;
+  &lt;/<span style="color: #0000ff;">features</span>&gt;
+  &lt;<span style="color: #0000ff;">clock</span> <span style="color: #a0522d;">offset</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">utc</span><span style="color: #8b2252;">'</span>/&gt;
+  &lt;<span style="color: #0000ff;">on_poweroff</span>&gt;destroy&lt;/<span style="color: #0000ff;">on_poweroff</span>&gt;
+  &lt;<span style="color: #0000ff;">on_reboot</span>&gt;restart&lt;/<span style="color: #0000ff;">on_reboot</span>&gt;
+  &lt;<span style="color: #0000ff;">on_crash</span>&gt;destroy&lt;/<span style="color: #0000ff;">on_crash</span>&gt;
+  &lt;<span style="color: #0000ff;">devices</span>&gt;
+    &lt;<span style="color: #0000ff;">emulator</span>&gt;{{ path_to_qemu-kvm}} &lt;/<span style="color: #0000ff;">emulator</span>&gt;
+    &lt;<span style="color: #0000ff;">disk</span> <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">file</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">device</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">disk</span><span style="color: #8b2252;">'</span>&gt;
+       &lt;<span style="color: #0000ff;">driver</span> <span style="color: #a0522d;">name</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">qemu</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">qcow2</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">cache</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">none</span><span style="color: #8b2252;">'</span>/&gt;
+       &lt;<span style="color: #0000ff;">source</span> <span style="color: #a0522d;">file</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">{{ location_of_backing_image }}</span><span style="color: #8b2252;">'</span>/&gt;
+       &lt;<span style="color: #0000ff;">target</span> <span style="color: #a0522d;">dev</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">vda</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">bus</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">virtio</span><span style="color: #8b2252;">'</span>/&gt;
+    &lt;/<span style="color: #0000ff;">disk</span>&gt;
+    &lt;<span style="color: #0000ff;">interface</span> <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">network</span><span style="color: #8b2252;">'</span>&gt;
+       &lt;<span style="color: #0000ff;">source</span> <span style="color: #a0522d;">network</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">default</span><span style="color: #8b2252;">'</span>/&gt;
+    &lt;/<span style="color: #0000ff;">interface</span>&gt;
+    &lt;<span style="color: #0000ff;">serial</span> <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">pty</span><span style="color: #8b2252;">'</span>&gt;
+        &lt;<span style="color: #0000ff;">target</span> <span style="color: #a0522d;">port</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">0</span><span style="color: #8b2252;">'</span>/&gt;
+    &lt;/<span style="color: #0000ff;">serial</span>&gt;
+    &lt;<span style="color: #0000ff;">console</span> <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">pty</span><span style="color: #8b2252;">'</span>&gt;
+      &lt;<span style="color: #0000ff;">target</span> <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">serial</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">port</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">0</span><span style="color: #8b2252;">'</span>/&gt;
+    &lt;/<span style="color: #0000ff;">console</span>&gt;
+  &lt;/<span style="color: #0000ff;">devices</span>&gt;
+&lt;/<span style="color: #0000ff;">domain</span>&gt;
+</pre>
+</div>
+
+<p>
+Mind the  <code>&lt;emulator&gt;</code> field which must  point to the right  <code>qemu-kvm</code> binary,
+which is  the emulator itself.   On my system, i  find the right  binary looking
+into the <code>qemu-kvm</code> package:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">$ dpkg -L qemu-kvm
+...
+/usr/bin/qemu-system-x86_64-spice
+...
+</pre>
+</div>
+
+
+<p>
+Note that you could use <code>virt-manager</code> to do that, by loading the VM image and
+use the GUI to set these parameters.
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-4-6" class="outline-3">
+<h3 id="sec-4-6"><span class="section-number-3">4.6</span> Define the VM</h3>
+<div class="outline-text-3" id="text-4-6">
+<p>
+virsh must record this xml configuration file in its own configuration
+directory. If we assume you have chosen <code>bionic-vm</code> in the <code>&lt;name&gt;</code> field of the xml
+configuration, running the command below <b>as root</b> will create a <code>/etc/libvirt/qemu/bionic-vm.xml</code>.
+If you run it as normal user, this file will be stored in
+<code>$HOME/.config/libvirt</code>.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">$ virsh define vm.xml
+</pre>
+</div>
+<p>
+Notice that you can change the name afterwards with <code>virsh domrename old_name new_name</code>.
+</p>
+
+
+<ul class="org-ul">
+<li><i>Trouble Shooting Note :</i>  if you define the VM and then start it as a normal user, you <b>must</b>
+  have this user in the libvirt group as explained in section <a href="#user-in-libvirt-grp">2.2</a>
+  otherwise it is likely that you will get the following error message:
+<div class="org-src-container">
+
+<pre class="src src-sh">% virsh start bionic-vm
+error: internal error: /usr/lib/qemu/qemu-bridge-helper --use-vnet --br=virbr0: failed to communicate with bridge-helper
+</pre>
+</div>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-4-7" class="outline-3">
+<h3 id="sec-4-7"><span class="section-number-3">4.7</span> Start the VM</h3>
+<div class="outline-text-3" id="text-4-7">
+<p>
+Now, virsh can start the VM
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">% virsh start bionic-vm
+Domain myvm started
+% virsh list --all
+Id    Name                           State
+----------------------------------------------------
+ 1     bionic-vm                         running
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><i>Trouble-Shooting Note</i> : if <code>virsh start</code> complains it cannot open the
+backing image, e.g:
+<div class="org-src-container">
+
+<pre class="src src-sh">% virsh start bionic-vm
+error: Failed to start domain bionic
+ error: internal error: process exited while connecting to monitor: 
+2021-01-28T10:35:00.194308Z qemu-system-x86_64-spice: 
+-drive <span style="color: #a0522d;">file</span>=/tmp/bionic-server-cloudimg-amd64.img,
+<span style="color: #a0522d;">format</span>=qcow2,<span style="color: #a0522d;">if</span>=none,<span style="color: #a0522d;">id</span>=drive-virtio-disk0,<span style="color: #a0522d;">cache</span>=none: 
+Could not open <span style="color: #8b2252;">'/tmp/bionic-server-cloudimg-amd64.img'</span>: Permission denied
+</pre>
+</div>
+
+<p>
+it might be related to the level of security managed by app-armor or
+equivalent. A quick fix is to edit <code>/etc/libvirt/qemu.conf</code> and set
+<code>security_driver</code> to <code>none</code> and restart libvirt daemon :
+</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">% sudo vi /etc/libvirt/qemu.conf
+  <span style="color: #483d8b;">set</span> security_driver = <span style="color: #8b2252;">"none"</span>
+% sudo systemctl restart libvirt-bin
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4-8" class="outline-3">
+<h3 id="sec-4-8"><span class="section-number-3">4.8</span> Enter the VM</h3>
+<div class="outline-text-3" id="text-4-8">
+<p>
+Once started,  we can access  the VM through <code>ssh</code>  or through a  <code>console</code>. The
+communication goes through the equivalent  of a serial link. The characteristics
+of this link has been specified in the <code>&lt;serial&gt;</code> tag of the XML configuration.
+</p>
+
+<p>
+The console access is straight-forward if correctly configured:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">% virsh console bionic-vm
+Connected to domain bionic-vm
+Escape character is ^]
+--&gt; press <span style="color: #8b2252;">'Enter'</span>
+</pre>
+</div>
+
+<p>
+<i>Note</i>: a  single console might be  open at a  time. You can use  <code>virsh console
+&lt;domain&gt; -force</code>  to steal the  lock. You now  get connected through  the serial
+link with the VM screen.
+</p>
+
+<p>
+Login with 
+</p>
+<ul class="org-ul">
+<li>username: root 
+</li>
+<li>password: coolpass (or whatever you set it to).
+</li>
+</ul>
+</div>
+</div>
+
+
+
+
+<div id="outline-container-sec-4-9" class="outline-3">
+<h3 id="sec-4-9"><span class="section-number-3">4.9</span> Exit and Stop the VM</h3>
+<div class="outline-text-3" id="text-4-9">
+<ul class="org-ul">
+<li>Once  you are  connected to  the VM,  you can  switch back  to the  native OS
+console (from where you started the  VM). Getting out this screen requires to
+send the right character  sequence.  In most cases, this is  <code>Ctrl</code> + <code>]</code> (as
+the  message says)  but  depending  on the  keyboard  might  be difficult  to
+guess. For instance on a French MacOSX keyboard, this is <code>Ctrl</code> + <code>$</code>.
+</li>
+
+<li>Note that even if you exited from the shell started in the VM after logging in
+(with <code>Ctrl</code> + <code>d</code> or <code>exit</code>), it does not mean the VM is halted. From another
+console on the host, running <code>virsh list --all</code> would show you that the VM is
+still running.
+</li>
+
+<li>To actually halt the VM, you must run <code>virsh shutdown bionic-vm</code> from the host.
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Networking</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+In this section,
+</p>
+<ol class="org-ol">
+<li>we first review the virtual network that has been set to connect the host and the guest by libvirt,
+</li>
+<li>then we check the network settings inside the guest,
+</li>
+<li>we finalize the ssh configuration to be able to log in the guest.
+</li>
+<li>finally, we give an overview of another network setting: the routed mode.
+</li>
+</ol>
+</div>
+
+<div id="outline-container-sec-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Network between host and guest (default conf.)</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+The default  method for sharing  network connections  is to use  Network Address
+Translation  (NAT)  forwarding  (also  known as  <i>User-mode</i>).  See the lecture
+slides to remind you the different modes.
+</p>
+
+
+<div class="figure">
+<p><img src="https://wiki.libvirt.org/images/7/7e/Virtual_network_default_network_overview.jpg" alt="Virtual_network_default_network_overview.jpg" width="70%" />
+</p>
+<p><span class="figure-number">Figure 2:</span> the default network setting is NAT (source libvirt.og)</p>
+</div>
+
+<p>
+This configuration is also described as an xml file by libvirt and named
+<code>default</code>. Verify that  it is  available with <code>virsh net-list --all</code>.
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-sh">$ virsh net-list --all
+Name                 State      Autostart
+-----------------------------------------
+default              active     yes
+</pre>
+</div>
+
+<p>
+This corresponds to an xml configuration file found in
+<code>/etc/libvirt/qemu/networks/default.xml</code>
+</p>
+</div>
+
+<div id="outline-container-sec-5-1-1" class="outline-4">
+<h4 id="sec-5-1-1"><span class="section-number-4">5.1.1</span> To Do</h4>
+<div class="outline-text-4" id="text-5-1-1">
+<p>
+Check  the  contents  of  this  configuration   file  to  see  if  it  fits  our
+installation. Which information seems important ? Which two interfaces are
+connected by the bridge ?
+</p>
+
+<p>
+Note that it  is not necessary to know  the location of the file to  see or edit
+it : you would better use <code>virsh net-edit</code>  as you used <code>virsh edit</code> to browse a
+VM's properties.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-5-1-2" class="outline-4">
+<h4 id="sec-5-1-2"><span class="section-number-4">5.1.2</span> To Do</h4>
+<div class="outline-text-4" id="text-5-1-2">
+<p>
+How does this network configuration is linked to our <code>bionic-vm</code> ? (in other
+words, what tells <code>bionic-vm</code> to use this configuration ?)
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-5-2" class="outline-3">
+<h3 id="sec-5-2"><span class="section-number-3">5.2</span> Configuring the Linux guest network</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+<a id="conf-netplan" name="conf-netplan"></a>
+</p>
+
+<p>
+The bionic  image we  use is  tailored for cloud  and normally  the <code>cloud-init</code>
+package would deal with  network settings. As <code>cloud-init</code> is not  our scope, let
+us configure manually a network interface on the guest.
+</p>
+
+<ul class="org-ul">
+<li>First, check which interfaces are defined in the guest: <code>ifconfig -a</code> list all
+available interfaces, even those down. Here, we have:
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">root@ubuntu:~# ifconfig -a
+ens2: <span style="color: #a0522d;">flags</span>=4098&lt;BROADCAST,MULTICAST&gt;  mtu 1500
+        ether 52:54:00:d5:26:12  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: <span style="color: #a0522d;">flags</span>=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10&lt;host&gt;
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 48  bytes 3056 (3.0 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 48  bytes 3056 (3.0 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+</pre>
+</div>
+
+<p>
+Interface <code>ens2</code> is down (no IP assigned), so we need to configure it.
+</p>
+
+
+<p>
+Assuming you are still logged in the guest, copy-paste the following text in the
+file    <code>/etc/netplan/01-netcfg.yaml</code>   (netplan    is   the    replacement   of
+/etc/network/interfaces since Ubuntu 18.04).
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-sh">root@ubuntu:~# cat &gt; /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens2:
+      dhcp4: true
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Then apply the configuration:
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">root@ubuntu:~# netplan apply 
+ens2: <span style="color: #a0522d;">flags</span>=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+      inet 192.168.122.246  Netmask 255.255.255.0  broadcast 192.168.122.255
+      inet6 fe80::5054:ff:fed1:3dfa  prefixlen 64  scopeid 0x20&lt;link&gt;
+      ether 52:54:00:d1:3d:fa  txqueuelen 1000  (Ethernet)
+...
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>the guest  now has <code>ens2</code>  up with  an IP delivered  by the host  through DHCP
+(assuming the hypervisor is setup with a default network that does DHCP). 
+</li>
+
+<li>Are you able to determine which IPs (IP in which range) can be delivered to
+VMs ?
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-5-3" class="outline-3">
+<h3 id="sec-5-3"><span class="section-number-3">5.3</span> <code>ssh</code> connection</h3>
+<div class="outline-text-3" id="text-5-3">
+<p>
+To login on the guest, we have  so far used the <b>console</b> mode.  However, <code>ssh</code>
+is a far more convenient and powerfull way of remotely accessing the VMs. 
+</p>
+
+<p>
+The next step in our guest configuration is hence to review the ssh
+installation and configuration. 
+</p>
+
+<p>
+The <code>openssh-server</code> package is already installed in the image, but we have
+to finalize the authentification via public key.
+</p>
+</div>
+
+
+<div id="outline-container-sec-5-3-1" class="outline-4">
+<h4 id="sec-5-3-1"><span class="section-number-4">5.3.1</span> To Do</h4>
+<div class="outline-text-4" id="text-5-3-1">
+<ul class="org-ul">
+<li>Connect to the guest through console. Check if <code>/etc/ssh/</code> contains host keys,
+i.e files such as <code>ssh_host_rsa_key</code>. If not, force the regeneration of keys: 
+<div class="org-src-container">
+
+<pre class="src src-sh">root@ubuntu:~# dpkg-reconfigure openssh-server
+</pre>
+</div>
+<p>
+A longer but more portable way to achieve this is:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">root@ubuntu:~# sudo ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+root@ubuntu:~# sudo ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key
+root@ubuntu:~# sudo ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
+</pre>
+</div>
+</li>
+
+<li>Loging in as root through ssh with a password is almost always prohibited
+nowadays. Even if we can change <code>/etc/sshd_config</code> to permit logging with
+password, it is highly recommended to use public and private keys.
+
+<p>
+Therefore, you must authorize in the guest the public key from the user
+connecting (say <i>alice</i>) from the host.
+</p>
+
+<ul class="org-ul">
+<li>On the  host, <i>alice</i> must generate a private+public key and copy/paste
+the public key on the guest :
+<div class="org-src-container">
+
+<pre class="src src-sh"><span style="color: #b22222;"># </span><span style="color: #b22222;">on the host</span>
+% ssh-keygen
+Enter file<span style="color: #a020f0;"> in</span> which to save the key (/home/alice/.ssh/id_dsa):
+<span style="color: #b22222;"># </span><span style="color: #b22222;">...  leave the default by pressing enter</span>
+<span style="color: #b22222;"># </span><span style="color: #b22222;">...  then a id_dsa.pub and id_dsa are created in .ssh/ </span>
+% cat /home/alice/.ssh/id_dsa.pub
+ssh-dss AAAAB3NzaC1kc3 ...[truncated] ... ssdX1NaZUi
+<span style="color: #a0522d;">Bd34Sf5hh9qQNILCv3x4y95XCx0Jw</span>=4DzSWxHjkld45ERTdx49c8z  alice@pc1.u-strasbg.fr
+</pre>
+</div>
+</li>
+
+<li>On the guest, make sure <code>root</code> has a <code>.ssh/</code> directory in its root
+directory, create it otherwise. Then copy-paste the public key of <i>alice</i> :
+<div class="org-src-container">
+
+<pre class="src src-sh"><span style="color: #b22222;"># </span><span style="color: #b22222;">on the guest</span>
+root@ubuntu:~# mkdir .ssh
+root@ubuntu:~# cat &gt;&gt; ~/.ssh/authorized_keys
+  <span style="color: #b22222;"># </span><span style="color: #b22222;">copy/paste  the long line that you have displayed the step above.</span>
+</pre>
+</div>
+</li>
+</ul>
+</li>
+
+<li>From the host ssh to the guest. In our case, we know the IP from the <a href="#conf-netplan">network
+configuration step</a> done above. In this example, <code>ifconfig</code> tells us the IP is 192.168.122.246.
+<i>Alice</i> can now log in the guest with:
+<div class="org-src-container">
+
+<pre class="src src-sh">% ssh root@192.168.122.246
+</pre>
+</div>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-sec-5-3-2" class="outline-4">
+<h4 id="sec-5-3-2"><span class="section-number-4">5.3.2</span> To Do (Guess guest's IP)</h4>
+<div class="outline-text-4" id="text-5-3-2">
+<p>
+Guess the IP address from outside the VM : consider you just start a VM and you
+have no access to the console. How would you guess the VM's IP ?
+Think the guest has necessarily communicated with the host when setting up its network
+interface. Thus, its IP must be in the ARP table of the host.
+</p>
+
+<p>
+<i>Note</i> : A quick way to get the MAC address of the VM virtual NIC is: 
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">% virsh domiflist bionic-vm
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id="outline-container-sec-5-4" class="outline-3">
+<h3 id="sec-5-4"><span class="section-number-3">5.4</span> Network configuration : routed mode</h3>
+<div class="outline-text-3" id="text-5-4">
+<p>
+Ok, we are  now all set with  the network configuration. Normally,  the guest is
+able to communicate with  the host and to outside. You  might check for instance
+that a ping 8.8.8.8 from the guest is successful.
+</p>
+</div>
+
+<div id="outline-container-sec-5-4-1" class="outline-4">
+<h4 id="sec-5-4-1"><span class="section-number-4">5.4.1</span> To Do</h4>
+<div class="outline-text-4" id="text-5-4-1">
+<p>
+Now,  what  are the  limitations  of  this  configuration?  Give an  example  of
+communication you cannot perform.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-5-4-2" class="outline-4">
+<h4 id="sec-5-4-2"><span class="section-number-4">5.4.2</span> Setting up a routed mode</h4>
+<div class="outline-text-4" id="text-5-4-2">
+<p>
+With routed  mode, the  virtual switch  is connected to  the physical  host LAN,
+passing guest network traffic back and forth without using NAT.
+</p>
+
+
+<div class="figure">
+<p><img src="https://wiki.libvirt.org/images/2/2c/Virtual_network_switch_in_routed_mode.png" alt="Virtual_network_switch_in_routed_mode.png" width="70%" />
+</p>
+<p><span class="figure-number">Figure 3:</span> network setting in routed mode (source libvirt.og)</p>
+</div>
+
+<p>
+The virtual switch sees the IP addresses in each packet, using that information when deciding what to do.
+</p>
+
+<p>
+In this mode all virtual machines are in a subnet routed through the virtual switch. 
+</p>
+
+<p>
+However, as no other hosts on the physical network know this subnet exists or
+how to reach it, it is <b>necessary to configure routers in the physical network</b> (e.g. using a
+static route). 
+</p>
+
+<p>
+For that reason, we will not implement this in this tutorial. Let us simply give
+an example of what should be done.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-5-4-3" class="outline-4">
+<h4 id="sec-5-4-3"><span class="section-number-4">5.4.3</span> Settings</h4>
+<div class="outline-text-4" id="text-5-4-3">
+<ul class="org-ul">
+<li>The public IPs for the physicals hosts in the subnet range in 130.79.92.0/25.
+</li>
+<li>The host hosting the VM has a physical interface ens2: 130.79.92.17 
+</li>
+<li>Available IPs for VMs are chosen in a subnet of 6 IPv4 addresses (130.79.92.88/29) 
+</li>
+<li>The virtual switch acting as router has been named <code>virbr1</code> by libvirt
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-5-4-4" class="outline-4">
+<h4 id="sec-5-4-4"><span class="section-number-4">5.4.4</span> Step 1 : define the configuration for virsh</h4>
+<div class="outline-text-4" id="text-5-4-4">
+<ul class="org-ul">
+<li>We can set up this configuration for libvirt in a file, say <code>routed_network.xml</code>:
+</li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-xml">&lt;<span style="color: #0000ff;">network</span>&gt;
+  &lt;<span style="color: #0000ff;">name</span>&gt;routed_network&lt;/<span style="color: #0000ff;">name</span>&gt;
+  &lt;<span style="color: #0000ff;">forward</span> <span style="color: #a0522d;">dev</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">virbr0-nic</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">mode</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">route</span><span style="color: #8b2252;">'</span>&gt;
+    &lt;<span style="color: #0000ff;">interface</span> <span style="color: #a0522d;">dev</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">virbr0-nic</span><span style="color: #8b2252;">'</span>/&gt;
+  &lt;/<span style="color: #0000ff;">forward</span>&gt;
+  &lt;<span style="color: #0000ff;">bridge</span> <span style="color: #a0522d;">name</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">virbr1</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">stp</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">on</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">delay</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">0</span><span style="color: #8b2252;">'</span>/&gt;
+  &lt;<span style="color: #0000ff;">mac</span> <span style="color: #a0522d;">address</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">52:54:00:54:83:a8</span><span style="color: #8b2252;">'</span>/&gt;
+  &lt;<span style="color: #0000ff;">domain</span> <span style="color: #a0522d;">name</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">routed_network</span><span style="color: #8b2252;">'</span>/&gt;
+  &lt;<span style="color: #0000ff;">ip</span> <span style="color: #a0522d;">address</span>=<span style="color: #8b2252;">''</span> <span style="color: #a0522d;">netmask</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">255.255.255.248</span><span style="color: #8b2252;">'</span>&gt;
+    &lt;<span style="color: #0000ff;">dhcp</span>&gt;
+      &lt;<span style="color: #0000ff;">range</span> <span style="color: #a0522d;">start</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">130.79.92.89</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">end</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">130.79.92.94</span><span style="color: #8b2252;">'</span>/&gt;
+    &lt;/<span style="color: #0000ff;">dhcp</span>&gt;
+  &lt;/<span style="color: #0000ff;">ip</span>&gt;
+&lt;/<span style="color: #0000ff;">network</span>&gt;
+</pre>
+</div>
+<p>
+and then define it for virsh : <code>virsh net-define routed_network.xml</code>.
+</p>
+
+<ul class="org-ul">
+<li>Replace the <code>&lt;interface&gt;</code> in the definition of VM to use the new network, then
+stop/restart the VM.
+</li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-xml">&lt;<span style="color: #0000ff;">domain</span> <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">kvm</span><span style="color: #8b2252;">'</span>&gt;
+  &lt;<span style="color: #0000ff;">name</span>&gt;bionic-vm&lt;/<span style="color: #0000ff;">name</span>&gt;
+    ...
+    &lt;<span style="color: #0000ff;">interface</span> <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">network</span><span style="color: #8b2252;">'</span>&gt;
+       &lt;<span style="color: #0000ff;">source</span> <span style="color: #a0522d;">network</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">routed_network</span><span style="color: #8b2252;">'</span>/&gt;
+    &lt;/<span style="color: #0000ff;">interface</span>&gt;
+    ...
+&lt;/<span style="color: #0000ff;">domain</span>&gt;
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-5-4-5" class="outline-4">
+<h4 id="sec-5-4-5"><span class="section-number-4">5.4.5</span> Step 2 : make the physical router aware of VMs</h4>
+<div class="outline-text-4" id="text-5-4-5">
+<p>
+We then need the net admin to set up a static route so that external hosts can
+reach the VMs.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">% ip -4 route add 130.79.92.88/29 via 130.79.92.17
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Manage VM life-cycle</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+We have so far defined and configured  a VM for libvirt. 
+</p>
+
+<p>
+In this section:
+</p>
+<ul class="org-ul">
+<li>we review the essentials commands to start and stop a VM with virsh.
+</li>
+</ul>
+</div>
+
+<div id="outline-container-sec-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Start and Stop</h3>
+<div class="outline-text-3" id="text-6-1">
+<ul class="org-ul">
+<li>Start: as already seen, <code>virsh start domain</code> let you <b>boot</b> a VM. Notice that the
+command also enables to <b>restore</b> a VM  from the previously saved state. Will see
+the managedsave virsh command in a <i>further section</i>.
+</li>
+
+<li>Stop: virsh offers two options to stop a VM:
+
+<ul class="org-ul">
+<li><code>virsh shutdown domain</code> mimics a graceful <i>power-off</i> of the VM. This calls
+the <code>acpid</code> daemon on host to emulate the on/off button. The VM definition
+must contain the <code>&lt;acpi/&gt;</code> feature (as in our previous template for
+bionic-vm) for this command to be effective.
+</li>
+
+<li><code>virsh destroy domain</code> mimics a brutal <i>power-off</i>, such as unpluging the
+electric cable.
+</li>
+</ul>
+</li>
+</ul>
+
+<p>
+The real action taken by <code>virsh</code> is configured globally for libvirt in <code>/etc/init.d/libvirt-guests</code>
+and can be overidden by the  <code>&lt;on_shutdown&gt;</code> field of the xml configuration file
+of the domain <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup>. 
+</p>
+<ul class="org-ul">
+<li><code>virsh reboot domain</code>
+</li>
+</ul>
+</div>
+
+
+
+<div id="outline-container-sec-6-1-1" class="outline-4">
+<h4 id="sec-6-1-1"><span class="section-number-4">6.1.1</span> To Do</h4>
+<div class="outline-text-4" id="text-6-1-1">
+<ul class="org-ul">
+<li>From a terminal on the host, (gracefully) shutdown the running <i>bionic-vm</i>
+guest. Then run <code>virsh list --all</code> and see the status. If you observe the VM 
+is still in state <i>running</i>, there are two potential causes:
+
+<ul class="org-ul">
+<li>the xml definition of the VM does not mention the support for ACPI and APIC.
+You should have inside the top-domain tag <code>&lt;domain&gt;</code>:
+<div class="org-src-container">
+
+<pre class="src src-xml">&lt;<span style="color: #0000ff;">features</span>&gt;
+  &lt;<span style="color: #0000ff;">acpi</span>/&gt;
+  &lt;<span style="color: #0000ff;">apic</span>/&gt;
+&lt;/<span style="color: #0000ff;">features</span>&gt;
+</pre>
+</div>
+</li>
+
+<li>less likely, it  is due to shutdown timeout configuration: it  may be set to
+happen  only  several minutes after the request.  This  is configured  globally  by
+libvirt, as shown below,  with a timeout of 5 minutes.  Change this value to
+10 seconds.
+<div class="org-src-container">
+
+<pre class="src src-sh">$ cat /etc/init.d/libvirt-guests
+...
+<span style="color: #a0522d;">On_shutdown</span>=shutdown
+<span style="color: #a0522d;">SHUTDOWN_TIMEOUT</span>=300
+...
+</pre>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-6-2" class="outline-3">
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Suspend and Resume</h3>
+<div class="outline-text-3" id="text-6-2">
+<ul class="org-ul">
+<li>Suspend: <code>virsh  suspend domain</code>:  when a  guest is in  a suspended  state, it
+consumes system  RAM but no  CPU cycles. Disk and  network I/O does  not occur
+while the guest is suspended. 
+</li>
+
+<li>Resume:  <code>virsh resume domain</code>: unpauses a suspended domain.
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Migration</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+Live migration implies to copy a VM running on a host A over the network to a
+host B and having the VM on host B resuming the execution where it stopped at
+some point on A. 
+</p>
+
+<p>
+In this section:
+</p>
+<ul class="org-ul">
+<li>we review the constraints for live migration,
+</li>
+<li>we set up an NFS share so that the two hosts can share the VM image,
+</li>
+<li>we proceed to a live migration
+</li>
+<li>we elaborate on the NFS share to transform it in a libvirt storage pool.
+</li>
+</ul>
+</div>
+
+
+<div id="outline-container-sec-7-1" class="outline-3">
+<h3 id="sec-7-1"><span class="section-number-3">7.1</span> Constraints</h3>
+<div class="outline-text-3" id="text-7-1">
+<ul class="org-ul">
+<li>Hosts A and B should be approximately equivalent from a hardware point of view.
+</li>
+
+<li>The VM image of the guest to be migrated should be present on both hosts. The
+typical way of handling this constraint is to share a directory where the
+image is stored, for instance over NFS. To configure a NFS disk share, refer
+to section <a href="#nfs">7.2</a> below.
+</li>
+
+<li>The guest  state is going to  be copied from A  to B. In this  example, we use
+<code>ssh</code>  as transport  layer.  It  is convenient  to  have  a password-less  ssh
+connection between  A and  B by configuring  a <code>.ssh/authorized_keys</code>  file on
+host B.
+</li>
+
+<li>And of course, the firewall should let the two hosts communicate on TCP ports used
+by the transport layer (ports used start from 49152). 
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-7-2" class="outline-3">
+<h3 id="sec-7-2"><span class="section-number-3">7.2</span> Setting up an NFS share</h3>
+<div class="outline-text-3" id="text-7-2">
+<p>
+<a id="nfs" name="nfs"></a>
+</p>
+</div>
+
+<div id="outline-container-sec-7-2-1" class="outline-4">
+<h4 id="sec-7-2-1"><span class="section-number-4">7.2.1</span> Trap to avoid</h4>
+<div class="outline-text-4" id="text-7-2-1">
+<p>
+<i>Note:</i> in this NFS setting, beware to avoid the trap that consists in mounting a
+local directory to itself, resulting in recursive mount attempts. This means,
+if you :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">% mkdir /mnt
+% mount -tnfs localhost:/mnt /mnt
+</pre>
+</div>
+<p>
+you will probably be blocked as soon as you try to access <code>/mnt</code>. In that case,
+if you have written such a mount order in <code>/etc/fstab</code>, comment it, and reboot !
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-sec-7-2-2" class="outline-4">
+<h4 id="sec-7-2-2"><span class="section-number-4">7.2.2</span> To Do</h4>
+<div class="outline-text-4" id="text-7-2-2">
+<ol class="org-ol">
+<li>On a machine that will act as NFS server, let us say <code>pc3.u-strasbg.fr</code> (IP <code>130.79.92.99</code>,
+netmask <code>/25</code>) sharing its directory, let us say <code>/virtstore</code> :
+<ul class="org-ul">
+<li>install the package <code>nfs-common</code> and <code>nfs-kernel-server</code>
+</li>
+<li>declare <i>exported</i> the  directory you want to share: append  a line such as
+the one  below to <code>/etc/exports</code>  file (adapt  to your setting  the netmask
+specifiying which machines can access the directory)
+<div class="org-src-container">
+
+<pre class="src src-sh">/virtstore 130.79.92.0/25(rw,no_root_squash)
+</pre>
+</div>
+<p>
+and then make the mount daemon be aware of the modification: <code>exportfs -r</code>.
+</p>
+</li>
+</ul>
+</li>
+
+<li>On  <b>both   hosts</b>  machines   that   will  run   the  VMs   (let  us   say
+<code>{pc1,pc2}.u-strasbg.fr</code>), enable the access to the NFS share by mounting the
+directory:
+<ul class="org-ul">
+<li>create a local directory to : <code>mkdir /virtstore</code>
+</li>
+<li>add to the <code>/etc/fstab</code> :
+<div class="org-src-container">
+
+<pre class="src src-sh">pc3.u-strasbg.fr:/virtstore  /virtstore nfs auto,<span style="color: #a0522d;">local_lock</span>=all,_netdev 0 0
+</pre>
+</div>
+</li>
+<li>mount what's described in fstab : <code>mount -a</code>
+</li>
+</ul>
+</li>
+
+<li>Finally,
+<ul class="org-ul">
+<li>move or copy the image to the <code>/virtstore</code> directory on the NFS server <code>pc3.u-strasbg.fr</code>.
+</li>
+<li>reflect the location in the libvirt configuration : <code>virsh edit bionic-vm</code>
+and edit the <code>devices-&gt;disk-&gt;source</code> tag to set the actual image
+location 
+<div class="org-src-container">
+
+<pre class="src src-xml">&lt;<span style="color: #0000ff;">source</span> <span style="color: #a0522d;">file</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">/virtstore/bionic-server-cloudimg-amd64.img</span><span style="color: #8b2252;">'</span>/&gt;
+</pre>
+</div>
+</li>
+<li>make sure to restart any VM that would still run and use the old location.  
+</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-7-3" class="outline-3">
+<h3 id="sec-7-3"><span class="section-number-3">7.3</span> Live migration with virsh</h3>
+<div class="outline-text-3" id="text-7-3">
+</div><div id="outline-container-sec-7-3-1" class="outline-4">
+<h4 id="sec-7-3-1"><span class="section-number-4">7.3.1</span> To Do</h4>
+<div class="outline-text-4" id="text-7-3-1">
+<ul class="org-ul">
+<li>Follow the following steps to proceed to a live migration. You should
+observe the following state. In the example lines below, host A is
+<code>pc1.u-strasbg.fr</code> and host B is <code>pc2.u-strasbg.fr</code>.
+</li>
+
+<li>Initially, the <code>bionic-vm</code> guest is running on host A.
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">user@pc1:~$ sudo virsh list --all
+ Id    Name                           State
+----------------------------------------------------
+ 2     bionic-vm                      running
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>On host A, we request the live migration of the guest OS to host B. In this
+command line, we use the existing user account <code>user</code> for which
+password-less connection with ssh keys has been configured. The trailing
+<code>/system</code> tells libvirt that you need full access.
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">user@pc1:~$ virsh migrate --live bionic-vm qemu+ssh://user@pc2.u-strasbg.fr/system
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>On host B, you should observe shortly after the migration has been iniatiated
+that <code>bionic-vm</code> has been created. For a couple of minutes, its running state
+is <i>paused</i>, while the copy is in progress. When the migration has ended, its
+state should be <i>running</i>. The migration takes about 30-40s in my setting.
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">user@pc2:~$ sudo virsh list --all
+ Id    Name                           State
+----------------------------------------------------
+ 2     bionic-vm                      paused
+
+  <span style="color: #b22222;">## </span><span style="color: #b22222;">... copy is going on ...</span>
+
+user@pc2:~$ sudo virsh list --all
+ Id    Name                           State
+----------------------------------------------------
+ 2     bionic-vm                      running
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>On host A, the migrated VM has been shut off.
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">user@pc1:~$ virsh list --all
+ Id    Name                           State
+----------------------------------------------------
+ -     bionic-vm                      shut off
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-7-4" class="outline-3">
+<h3 id="sec-7-4"><span class="section-number-3">7.4</span> Abstracting the storage</h3>
+<div class="outline-text-3" id="text-7-4">
+<ul class="org-ul">
+<li>In section <a href="#nfs">7.2</a> step 2, we have manually mounted the shared directory.
+</li>
+
+<li>Virsh proposes the notion of <i>storage pool</i>. It abstracts the way the storage
+is accessed as it unifies different storage types: directory, filesystem, nfs,
+iSCSI, GlusterFS, &#x2026; The advantage is that the operation (for example
+mounting the NFS share) can be automated through libvirt commands and done remotely.
+</li>
+
+<li>Here, we are going to define a storage pool made of the NFS exported
+directory.
+</li>
+</ul>
+</div>
+
+<div id="outline-container-sec-7-4-1" class="outline-4">
+<h4 id="sec-7-4-1"><span class="section-number-4">7.4.1</span> To Do</h4>
+<div class="outline-text-4" id="text-7-4-1">
+<ul class="org-ul">
+<li>Create a <code>virtstore.xml</code> file with the contents below and adapt to your setting.
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">&lt;pool <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'netfs'</span>&gt;
+   &lt;name&gt;virtstore&lt;/name&gt;
+    &lt;source&gt;
+       &lt;host <span style="color: #a0522d;">name</span>=<span style="color: #8b2252;">'host_which_exports_the_shared_directory'</span>/&gt;
+       &lt;dir <span style="color: #a0522d;">path</span>=<span style="color: #8b2252;">'/virtstore'</span>/&gt;
+       &lt;format <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'nfs'</span>/&gt;
+    &lt;/source&gt;
+    &lt;target&gt;
+       &lt;path&gt;/virtstore&lt;/path&gt;
+       &lt;permissions&gt;
+          &lt;mode&gt;0755&lt;/mode&gt;
+          &lt;owner&gt;-1&lt;/owner&gt;
+          &lt;group&gt;-1&lt;/group&gt;
+       &lt;/permissions&gt;
+    &lt;/target&gt;
+&lt;/pool&gt;
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Register the storage to libvirt with 
+</li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-sh">$ virsh pool-define virtstore.xml
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>And then make this storage starts automatically
+</li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-sh">$ virsh pool-autostart virtstore
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Repeat the operation on all hosts that will access the NFS share (<code>{pc1,pc2}.u-strasbg.fr</code>).
+</li>
+</ul>
+
+
+<ul class="org-ul">
+<li>You can check the status of the storage defined:
+</li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-sh">$ virsh pool-list --all --details
+ Name       State    Autostart  Persistent    Capacity  Allocation   Available
+-------------------------------------------------------------------------------
+ virtstore  running  yes        yes         218,90 GiB   13,33 GiB  205,57 GiB
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Once libvirt starts, it will automatically mount this NFS share. (Therefore if
+the share was previously manually mounted or mounted in <code>/etc/fstab</code>,
+<code>umount</code> it or remove the line in fstab).
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-7-5" class="outline-3">
+<h3 id="sec-7-5"><span class="section-number-3">7.5</span> Experiment persistence after migration</h3>
+<div class="outline-text-3" id="text-7-5">
+</div><div id="outline-container-sec-7-5-1" class="outline-4">
+<h4 id="sec-7-5-1"><span class="section-number-4">7.5.1</span> Recap</h4>
+<div class="outline-text-4" id="text-7-5-1">
+<ul class="org-ul">
+<li>We want now to look closer of the behavior of the migrated guest on host B.
+If we recap, 
+<ul class="org-ul">
+<li>we have migrated <code>bionic-vm</code> from A to B using:
+<div class="org-src-container">
+
+<pre class="src src-sh">user@pc1:~$ virsh migrate --live bionic-vm qemu+ssh://user@pc2.u-strasbg.fr/system
+</pre>
+</div>
+</li>
+<li>we have then been able to log in on the guest migrated on B with
+<div class="org-src-container">
+
+<pre class="src src-sh">user@pc2:~$ virsh console bionic-vm
+</pre>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+
+<div id="outline-container-sec-7-5-2" class="outline-4">
+<h4 id="sec-7-5-2"><span class="section-number-4">7.5.2</span> To Do 1</h4>
+<div class="outline-text-4" id="text-7-5-2">
+<ul class="org-ul">
+<li>We want to see what happens if we stop the migrated VM. So stop it and
+list available VMs. Is <code>bionic-vm</code> restartable?
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-7-5-3" class="outline-4">
+<h4 id="sec-7-5-3"><span class="section-number-4">7.5.3</span> To Do 2</h4>
+<div class="outline-text-4" id="text-7-5-3">
+<ul class="org-ul">
+<li>We now want to check if we can write a file once logged in guest on B.
+Log in guest on B and try to write a file. 
+</li>
+
+<li>If you cannot, you may have seen the warning
+</li>
+</ul>
+<blockquote>
+<p>
+error: Unsafe migration:
+   Migration may lead to data corruption
+   if discs use cache! = none
+</p>
+</blockquote>
+
+<ul class="org-ul">
+<li>Libvirt has in fact remounted the file-system read-only. To avoid this, you
+must turn off  the cache of the disk  attached to the VM. To  do that, stop
+the VM, <code>virsh edit</code> its definition and look for the <code>devices -&gt; disk -&gt; driver</code> and
+add attribute <code>cache</code> set to ='none'=  so that it reads 
+<div class="org-src-container">
+
+<pre class="src src-xml">&lt;<span style="color: #0000ff;">disk</span> ...&gt;
+   &lt;<span style="color: #0000ff;">driver</span> <span style="color: #a0522d;">name</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">qemu</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">type</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">qcow2</span><span style="color: #8b2252;">'</span> <span style="color: #a0522d;">cache</span>=<span style="color: #8b2252;">'</span><span style="color: #8b2252;">none</span><span style="color: #8b2252;">'</span>/&gt;
+&lt;/<span style="color: #0000ff;">disk</span>&gt;
+</pre>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+Any change to the on<sub>shutdown</sub> parameter will only take effect after the domain has been shutdown and restarted.
+</p></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="author">Author: Stéphane Genaud</p>
+<p class="date">Created: 2023-02-02 Thu 16:25</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 25.3.50.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
